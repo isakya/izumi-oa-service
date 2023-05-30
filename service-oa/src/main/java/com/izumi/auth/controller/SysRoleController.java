@@ -11,10 +11,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -57,5 +54,65 @@ public class SysRoleController {
         sysRoleService.page(pageParam, wrapper);
 
         return Result.ok(pageParam);
+    }
+    
+    @ApiOperation("添加角色")
+    @PostMapping("save")
+    public Result save(@RequestBody SysRole role) {
+        // 调用service方法
+        boolean is_success = sysRoleService.save(role);
+        if(is_success) {
+            return Result.ok();
+        } else {
+            return Result.fail();
+        }
+    }
+
+    // 修改角色-根据id查询
+    @ApiOperation("根据id查询")
+    @GetMapping("get/{id}")
+    public Result getById(@PathVariable Long id) {
+        SysRole sysRole = sysRoleService.getById(id);
+        return Result.ok(sysRole);
+    }
+
+    // 修改角色-最终修改
+    @ApiOperation("修改角色")
+    @PutMapping("update")
+    public Result update(@RequestBody SysRole role) {
+        // 调用service方法
+        boolean is_success = sysRoleService.updateById(role);
+        if(is_success) {
+            return Result.ok();
+        } else {
+            return Result.fail();
+        }
+    }
+
+    // 根据id删除
+    @ApiOperation("根据id删除")
+    @DeleteMapping("remove/{id}")
+    public Result remove(@PathVariable Long id) {
+        // 调用service方法
+        boolean is_success = sysRoleService.removeById(id);
+        if(is_success) {
+            return Result.ok();
+        } else {
+            return Result.fail();
+        }
+    }
+
+    // 批量删除
+    // 前端数组[1, 2, 3]
+    @ApiOperation("批量删除")
+    @DeleteMapping("batchRemove")
+    public Result batchRemove(@RequestBody List<Long> idList) {
+        // 调用service方法
+        boolean is_success = sysRoleService.removeByIds(idList);
+        if(is_success) {
+            return Result.ok();
+        } else {
+            return Result.fail();
+        }
     }
 }
