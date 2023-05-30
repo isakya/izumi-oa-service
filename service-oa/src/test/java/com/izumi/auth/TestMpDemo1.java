@@ -1,5 +1,7 @@
 package com.izumi.auth;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.izumi.auth.mapper.SysRoleMapper;
 import com.izumi.model.system.SysRole;
 import org.junit.jupiter.api.Test;
@@ -61,5 +63,27 @@ public class TestMpDemo1 {
     public void testDeleteBatchIds() {
         int result = mapper.deleteBatchIds(Arrays.asList(1, 1));
         System.out.println(result);
+    }
+
+    // 条件查询
+    @Test
+    public void testQuery1() {
+        // 创建QueryWrapper对象，调用方法封装条件
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("role_name", "总经理");
+        // 调用mp方法实现条件查询操作
+        List list = mapper.selectList(queryWrapper);
+        System.out.println(list);
+    }
+
+    // 条件查询
+    @Test
+    public void testQuery2() {
+        // 创建QueryWrapper对象，调用方法封装条件
+        LambdaQueryWrapper<SysRole> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(SysRole::getRoleName, "总经理");
+        // 调用mp方法实现条件查询操作
+        List list = mapper.selectList(queryWrapper);
+        System.out.println(list);
     }
 }
