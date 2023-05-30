@@ -17,6 +17,22 @@ public class GlobalExceptionHandler {
     @ResponseBody
     public Result error(Exception e){
         e.printStackTrace();
-        return Result.fail();
+        return Result.fail().message("执行了全局异常处理");
+    }
+
+    // 特定异常处理
+    @ExceptionHandler(ArithmeticException.class)
+    @ResponseBody
+    public Result error(ArithmeticException e){
+        e.printStackTrace();
+        return Result.fail().message("执行了特定异常处理");
+    }
+
+    // 自定义异常处理
+    @ExceptionHandler(IzumiException.class)
+    @ResponseBody
+    public Result error(IzumiException e){
+        e.printStackTrace();
+        return Result.fail().message(e.getMessage()).code(e.getCode());
     }
 }

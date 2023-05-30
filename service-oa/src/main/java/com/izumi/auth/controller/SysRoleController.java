@@ -3,6 +3,7 @@ package com.izumi.auth.controller;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.izumi.auth.service.SysRoleService;
+import com.izumi.common.config.exception.IzumiException;
 import com.izumi.common.result.Result;
 import com.izumi.model.system.SysRole;
 
@@ -32,7 +33,12 @@ public class SysRoleController {
         // 调用service的方法
         List<SysRole> list = sysRoleService.list();
         // 模拟异常效果
-        int i = 1/0;
+        try {
+            int i = 1/0;
+        } catch (Exception e) {
+            // 抛出自定义异常
+            throw new IzumiException(20001, "执行了自定义异常处理...");
+        }
         return Result.ok(list);
     }
 
