@@ -31,6 +31,8 @@ public class SysRoleController {
     public Result findAll() {
         // 调用service的方法
         List<SysRole> list = sysRoleService.list();
+        // 模拟异常效果
+        int i = 1/0;
         return Result.ok(list);
     }
 
