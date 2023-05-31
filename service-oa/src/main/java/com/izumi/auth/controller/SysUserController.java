@@ -7,6 +7,7 @@ import com.izumi.auth.service.SysUserService;
 import com.izumi.common.result.Result;
 import com.izumi.model.system.SysUser;
 import com.izumi.vo.system.SysUserQueryVo;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
  * @author izumi
  * @since 2023-05-31
  */
+@Api(tags = "用户接口管理")
 @RestController
 @RequestMapping("/admin/system/sysUser")
 public class SysUserController {
