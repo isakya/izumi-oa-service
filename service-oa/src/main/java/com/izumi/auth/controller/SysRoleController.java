@@ -48,13 +48,6 @@ public class SysRoleController {
     public Result findAll() {
         // 调用service的方法
         List<SysRole> list = sysRoleService.list();
-        // 模拟异常效果
-        try {
-            int i = 1/0;
-        } catch (Exception e) {
-            // 抛出自定义异常
-            throw new IzumiException(20001, "执行了自定义异常处理...");
-        }
         return Result.ok(list);
     }
 
