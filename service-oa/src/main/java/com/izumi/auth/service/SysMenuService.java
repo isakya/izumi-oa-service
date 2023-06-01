@@ -3,6 +3,7 @@ package com.izumi.auth.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.izumi.model.system.SysMenu;
 import com.izumi.vo.system.AssginMenuVo;
+import com.izumi.vo.system.RouterVo;
 
 import java.util.List;
 
@@ -23,4 +24,8 @@ public interface SysMenuService extends IService<SysMenu> {
     List<SysMenu> findMenuByRoleId(Long roleId);
 
     void doAssign(AssginMenuVo assginMenuVo);
+
+    List<RouterVo> findUserMenuListByUserId(Long userId);
+
+    List<String> findUserPermsByUserId(Long userId);
 }
