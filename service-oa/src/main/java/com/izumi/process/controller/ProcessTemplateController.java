@@ -37,6 +37,14 @@ public class ProcessTemplateController {
     @Autowired
     private ProcessTemplateService processTemplateService;
 
+
+    // @PreAuthorize("hasAuthority('bnt.processTemplate.publish')")
+    @ApiOperation(value = "发布")
+    @GetMapping("/publish/{id}")
+    public Result publish(@PathVariable Long id) {
+        processTemplateService.publish(id);
+        return Result.ok();
+    }
     //@PreAuthorize("hasAuthority('bnt.processTemplate.list')")
     @ApiOperation(value = "获取分页列表")
     @GetMapping("{page}/{limit}")
