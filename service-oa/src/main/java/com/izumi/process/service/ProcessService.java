@@ -19,5 +19,6 @@ import com.izumi.vo.process.ProcessVo;
 public interface ProcessService extends IService<Process> {
     IPage<ProcessVo> selectPage(Page<ProcessVo> pageParam, ProcessQueryVo processQueryVo);
 
+    // 部署流程定义
     void deployByZip(String deployPath);
 }

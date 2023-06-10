@@ -31,8 +31,6 @@ import java.util.stream.Collectors;
  */
 @Service
 public class ProcessTemplateServiceImpl extends ServiceImpl<ProcessTemplateMapper, ProcessTemplate> implements ProcessTemplateService {
-    @Resource
-    private ProcessTemplateMapper processTemplateMapper;
 
     @Resource
     private ProcessTypeService processTypeService;
@@ -44,7 +42,7 @@ public class ProcessTemplateServiceImpl extends ServiceImpl<ProcessTemplateMappe
     public IPage<ProcessTemplate> selectPage(Page<ProcessTemplate> pageParam) {
         LambdaQueryWrapper<ProcessTemplate> queryWrapper = new LambdaQueryWrapper<ProcessTemplate>();
         queryWrapper.orderByDesc(ProcessTemplate::getId);
-        IPage<ProcessTemplate> page = processTemplateMapper.selectPage(pageParam, queryWrapper);
+        IPage<ProcessTemplate> page = baseMapper.selectPage(pageParam, queryWrapper);
         List<ProcessTemplate> processTemplateList = page.getRecords();
 
         List<Long> processTypeIdList = processTemplateList.stream().map(processTemplate -> processTemplate.getProcessTypeId()).collect(Collectors.toList());
@@ -67,13 +65,11 @@ public class ProcessTemplateServiceImpl extends ServiceImpl<ProcessTemplateMappe
     public void publish(Long id) {
         ProcessTemplate processTemplate = this.getById(id);
         processTemplate.setStatus(1);
-        processTemplateMapper.updateById(processTemplate);
+        baseMapper.updateById(processTemplate);
 
-        //优先发布在线流程设计
+        //流程定义部署
         if(!StringUtils.isEmpty(processTemplate.getProcessDefinitionPath())) {
             processService.deployByZip(processTemplate.getProcessDefinitionPath());
         }
     }
-
-
 }

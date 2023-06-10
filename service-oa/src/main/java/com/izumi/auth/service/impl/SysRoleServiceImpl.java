@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.izumi.auth.mapper.SysRoleMapper;
 import com.izumi.auth.service.SysRoleService;
 import com.izumi.auth.service.SysUserRoleService;
-import com.izumi.auth.service.SysUserService;
 import com.izumi.model.system.SysRole;
 import com.izumi.model.system.SysUserRole;
 import com.izumi.vo.system.AssginRoleVo;
