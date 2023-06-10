@@ -24,4 +24,7 @@ public interface ProcessService extends IService<Process> {
     void deployByZip(String deployPath);
 
     void startUp(ProcessFormVo processFormVo);
+
+    // 查询待处理的任务列表
+    IPage<ProcessVo> findPending(Page<Process> pageParam);
 }

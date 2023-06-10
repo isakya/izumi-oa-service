@@ -4,6 +4,7 @@ package com.izumi.process.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.izumi.common.result.Result;
+import com.izumi.model.process.Process;
 import com.izumi.process.service.ProcessService;
 import com.izumi.vo.process.ProcessQueryVo;
 import com.izumi.vo.process.ProcessVo;
@@ -32,6 +33,18 @@ import org.springframework.web.bind.annotation.RestController;
 public class ProcessController {
     @Autowired
     private ProcessService processService;
+
+    @ApiOperation(value = "待处理")
+    @GetMapping("/findPending/{page}/{limit}")
+    public Result findPending(
+            @ApiParam(name = "page", value = "当前页码", required = true)
+            @PathVariable Long page,
+
+            @ApiParam(name = "limit", value = "每页记录数", required = true)
+            @PathVariable Long limit) {
+        Page<Process> pageParam = new Page<>(page, limit);
+        return Result.ok(processService.findPending(pageParam));
+    }
 
     @PreAuthorize("hasAuthority('bnt.process.list')")
     @ApiOperation(value = "获取分页列表")

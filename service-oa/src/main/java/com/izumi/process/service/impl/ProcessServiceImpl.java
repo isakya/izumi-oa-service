@@ -23,6 +23,7 @@ import org.activiti.engine.TaskService;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
+import org.activiti.engine.task.TaskQuery;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -143,6 +144,41 @@ public class ProcessServiceImpl extends ServiceImpl<ProcessMapper, Process> impl
 
         // 记录操作审批信息
         processRecordService.record(process.getId(), 1, "发起申请");
+    }
+
+    // 查询待处理的任务列表
+    @Override
+    public IPage<ProcessVo> findPending(Page<Process> pageParam) {
+        // 根据当前人的ID查询
+        TaskQuery query = taskService.createTaskQuery()
+                .taskAssignee(LoginUserInfoHelper.getUsername())
+                .orderByTaskCreateTime()
+                .desc();
+        List<Task> list = query.listPage((int) ((pageParam.getCurrent() - 1) * pageParam.getSize()), (int) pageParam.getSize());
+        long totalCount = query.count();
+
+        List<ProcessVo> processList = new ArrayList<>();
+        // 根据流程的业务ID查询实体并关联
+        for (Task item : list) {
+            String processInstanceId = item.getProcessInstanceId();
+            ProcessInstance processInstance = runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
+            if (processInstance == null) {
+                continue;
+            }
+            // 业务key
+            String businessKey = processInstance.getBusinessKey();
+            if (businessKey == null) {
+                continue;
+            }
+            Process process = this.getById(Long.parseLong(businessKey));
+            ProcessVo processVo = new ProcessVo();
+            BeanUtils.copyProperties(process, processVo);
+            processVo.setTaskId(item.getId());
+            processList.add(processVo);
+        }
+        IPage<ProcessVo> page = new Page<>(pageParam.getCurrent(), pageParam.getSize(), totalCount);
+        page.setRecords(processList);
+        return page;
     }
 
     // 当前任务列表
