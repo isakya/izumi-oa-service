@@ -9,6 +9,7 @@ import com.izumi.model.process.Process;
 import com.izumi.model.process.ProcessTemplate;
 import com.izumi.model.system.SysUser;
 import com.izumi.process.mapper.ProcessMapper;
+import com.izumi.process.service.ProcessRecordService;
 import com.izumi.process.service.ProcessService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.izumi.process.service.ProcessTemplateService;
@@ -58,6 +59,9 @@ public class ProcessServiceImpl extends ServiceImpl<ProcessMapper, Process> impl
 
     @Autowired
     private TaskService taskService;
+
+    @Autowired
+    private ProcessRecordService processRecordService;
 
     @Override
     public IPage<ProcessVo> selectPage(Page<ProcessVo> pageParam, ProcessQueryVo processQueryVo) {
@@ -136,6 +140,9 @@ public class ProcessServiceImpl extends ServiceImpl<ProcessMapper, Process> impl
         process.setDescription("等待" + StringUtils.join(nameList.toArray(), ",") + "审批");
         // 7 业务和流程关联 更新oa_process
         baseMapper.updateById(process);
+
+        // 记录操作审批信息
+        processRecordService.record(process.getId(), 1, "发起申请");
     }
 
     // 当前任务列表
