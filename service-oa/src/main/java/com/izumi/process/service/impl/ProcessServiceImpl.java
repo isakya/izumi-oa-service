@@ -2,10 +2,12 @@ package com.izumi.process.service.impl;
 
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.izumi.auth.service.SysUserService;
 import com.izumi.model.process.Process;
+import com.izumi.model.process.ProcessRecord;
 import com.izumi.model.process.ProcessTemplate;
 import com.izumi.model.system.SysUser;
 import com.izumi.process.mapper.ProcessMapper;
@@ -150,10 +152,7 @@ public class ProcessServiceImpl extends ServiceImpl<ProcessMapper, Process> impl
     @Override
     public IPage<ProcessVo> findPending(Page<Process> pageParam) {
         // 根据当前人的ID查询
-        TaskQuery query = taskService.createTaskQuery()
-                .taskAssignee(LoginUserInfoHelper.getUsername())
-                .orderByTaskCreateTime()
-                .desc();
+        TaskQuery query = taskService.createTaskQuery().taskAssignee(LoginUserInfoHelper.getUsername()).orderByTaskCreateTime().desc();
         List<Task> list = query.listPage((int) ((pageParam.getCurrent() - 1) * pageParam.getSize()), (int) pageParam.getSize());
         long totalCount = query.count();
 
@@ -176,9 +175,43 @@ public class ProcessServiceImpl extends ServiceImpl<ProcessMapper, Process> impl
             processVo.setTaskId(item.getId());
             processList.add(processVo);
         }
-        IPage<ProcessVo> page = new Page<>(pageParam.getCurrent(), pageParam.getSize(), totalCount);
+        IPage<ProcessVo> page = new Page<ProcessVo>(pageParam.getCurrent(), pageParam.getSize(), totalCount);
         page.setRecords(processList);
         return page;
+    }
+
+    // 查看审批详情
+    @Override
+    public Map<String, Object> show(Long id) {
+        // 1 根据流程id获取流程信息Process
+        Process process = baseMapper.selectById(id);
+
+        // 2 根据流程id获取流程记录信息
+        LambdaQueryWrapper<ProcessRecord> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(ProcessRecord::getProcessId, id);
+        List<ProcessRecord> processRecordList = processRecordService.list(wrapper);
+
+        // 3 根据模板id查询模板信息
+        ProcessTemplate processTemplate = processTemplateService.getById(process.getProcessTemplateId());
+
+        // 4 判断当前用户是否可以审批
+        // 可以看到信息不一定能审批，不能重复审批
+        boolean isApprove = false;
+        List<Task> taskList = this.getCurrentTaskList(process.getProcessInstanceId());
+        for (Task task : taskList) {
+            // 判断当前审批人是否是当前用户
+            if(task.getAssignee().equals(LoginUserInfoHelper.getUsername())) {
+                isApprove = true;
+            }
+        }
+
+        // 5 查询数据封装到map集合中
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("process", process);
+        map.put("processRecordList", processRecordList);
+        map.put("processTemplate", processTemplate);
+        map.put("isApprove", isApprove);
+        return map;
     }
 
     // 当前任务列表
