@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.izumi.common.result.Result;
 import com.izumi.model.process.Process;
 import com.izumi.process.service.ProcessService;
+import com.izumi.vo.process.ApprovalVo;
 import com.izumi.vo.process.ProcessQueryVo;
 import com.izumi.vo.process.ProcessVo;
 import io.swagger.annotations.Api;
@@ -67,6 +68,14 @@ public class ProcessController {
     public Result show(@PathVariable Long id) {
         Map<String, Object> map = processService.show(id);
         return Result.ok(map);
+    }
+
+    // 审批
+    @ApiOperation(value = "审批")
+    @PostMapping("approve")
+    public Result approve(@RequestBody ApprovalVo approvalVo) {
+        processService.approve(approvalVo);
+        return Result.ok();
     }
 }
 
